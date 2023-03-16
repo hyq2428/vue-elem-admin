@@ -1,12 +1,13 @@
 <template>
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" data="哈哈" />
+    <HelloWorld msg="Welcome to Your Vue.js App" data="哈哈"  @click="onClick"/>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
+
 import HelloWorld from "@/components/HelloWorld.vue";
 
 export default {
@@ -14,5 +15,12 @@ export default {
   components: {
     HelloWorld,
   },
+  methods:{
+    onClick(){
+      console.log("click on")
+      }
+    }
+ 
+  
 };
 </script>

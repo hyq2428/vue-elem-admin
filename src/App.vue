@@ -1,11 +1,11 @@
 <template>
-  <nav>
+  <!-- <nav>
     <router-link to="/">Home</router-link> |
     <router-link to="/about">About</router-link>
   </nav>
   <router-view />
-  <el-button type="primary">主要按钮</el-button>
-  
+  <el-button type="success">主要按钮</el-button> -->
+  <router-view />
 </template>
 
 
@@ -31,3 +31,6 @@ nav a.router-link-exact-active {
   color: #42b983;
 }
 </style>
+<script>
+// import Login from './views/account/Login.vue';
+</script>

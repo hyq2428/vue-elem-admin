@@ -107,6 +107,7 @@
         >
       </li>
     </ul>
+    <el-button @click="handclick">onClick</el-button>
   </div>
 </template>
 
@@ -117,6 +118,12 @@ export default {
     msg: String,
     data: String,
   },
+  setup(props,{attrs,slots,emit,expose}){
+    console.log(props.msg)
+    const handclick = function(){
+      emit("onClick")
+    }
+  }
 };
 </script>
 
