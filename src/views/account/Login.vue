@@ -201,7 +201,7 @@ export default{
             const data_post = {username:data.form.username,module:"register"}
             GetCode(data_post).then(response=>{
                 const data_response = response.data;
-                if (data_response.resCode===993596){
+                if (data_response.resCode===1024){
                     ElMessage.error({
                         message:data_response.message,
                         duration:0
