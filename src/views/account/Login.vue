@@ -26,7 +26,8 @@
                                 <el-input v-model="form.code"></el-input>
                             </el-col>
                             <el-col :span="10">
-                                <el-button @click="getCode" type="success" class="el-button-block">获取验证码</el-button>
+                                <el-button :loading="code_button_loading" :disabled="code_button_disable" @click="getCode" type="success" class="el-button-block">{{code_button_text}}</el-button>
+                                <!-- :loading="true"加载   disabled 点击不了-->
                             </el-col>
                         </el-row>
                     </el-form-item>
@@ -74,10 +75,9 @@
     }
 </style>
 <script>
-import { reactive,toRefs,getCurrentInstance } from 'vue';
-import{validate_email,validate_password,validate_code} from '../../utils/validate';
+import { reactive,toRefs,onBeforeUnmount } from 'vue';
+import{validate_email,validate_password} from '../../utils/validate';
 import {GetCode} from '../../api/common';
-import { type } from 'os';
 
 export default{
     setup(props,{ root }){
@@ -139,34 +139,86 @@ export default{
             //         {min:3,max:5,message:'长度在3和5之间',tigger:'change'}
             //     ]
             // },
-            current_menu:"login"
-        })
-        
-        
+            current_menu:"login",
+            code_button_loading:false, //true 才是阻拦
+            code_button_disable:false, //true  才是阻拦
+            code_button_text:"获取验证码",
+            code_button_timer:null,
+        })  
         const toggleMenu = ((type)=>{
             data.current_menu = type
         })
-        const {proxy} = getCurrentInstance()
+        //做定时器
+        const count_down = (time)=>{
+            let second = time || 60;
+            data.code_button_loading = false;
+            data.code_button_disable = true;
+            data.code_button_text = `倒计时${second}秒`;
+            if(data.code_button_timer){clearInterval(data.code_button_timer)}
+            data.code_button_timer = setInterval(() => {
+                second--
+                data.code_button_text = `倒计时${second}秒`
+                if(second<=0){
+                    data.code_button_text="重新获取"
+                    data.code_button_disable = false
+                    clearInterval(data.code_button_timer)
+                }
+            }, 1000);
+        }
+        //在用户离开界面 生命周期
+        onBeforeUnmount(()=>{
+            clearInterval(data.code_button_timer)
+        })
+        //const {proxy} = getCurrentInstance()
         const getCode=()=>{
-            // console.log(process.env.VUE_APP_API_DEV_TARGET)
-
             // proxy.$axios.post("http://v3.web-jshtml.cn/api/getCode/",
             // {username:data.form.username,module:"register"})
-            // const username = data.form.username;
-            // const password = data.form.password;
-            // const passwords = data.form.passwords;
-            // if(!validate_email(username)){
-            //     proxy.$message({
-            //         message:"用户名不能为空",
-            //         type:"error"
-            //     })
-            //     return false
-            // }
+            const username = data.form.username;
+            const password = data.form.password;
+            const passwords = data.form.passwords;
+            if(!validate_email(username)){
+                ElMessage.error({
+                    message:"用户名不能为空 或 格式不正确",
+                   
+                })
+                return false
+            }
+            
+            if(!validate_password(password)){
+                ElMessage.error({
+                    message:"密码不能为空 或 格式不正确",
+                })
+                return false
+            }
+            if(data.current_menu=="register" && (password !== passwords)){
+                ElMessage.error({
+                    message:"两次密码不一致"
+                })
+                return false
+            }
+            data.code_button_loading = true
+            data.code_button_text = "发送中"
             const data_post = {username:data.form.username,module:"register"}
             GetCode(data_post).then(response=>{
-                console.log(response)
-            }).catch(error=>{})
-            // GetCode()
+                const data_response = response.data;
+                if (data_response.resCode===993596){
+                    ElMessage.error({
+                        message:data_response.message,
+                        duration:0
+                    })
+                    data.code_button_loading = false
+                    data.code_button_text="获取验证码"
+                }else{
+                    ElMessage.success({
+                        message:data_response.message,
+                        duration:0
+                    })
+                    count_down()
+                }
+            }).catch(error=>{
+                data.code_button_loading = false
+                data.code_button_text = "获取验证码"
+            })
         }
         return{
             toggleMenu,...toRefs(data),getCode
