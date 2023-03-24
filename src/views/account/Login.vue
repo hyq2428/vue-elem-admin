@@ -32,7 +32,7 @@
                         </el-row>
                     </el-form-item>
                     <el-form-item>
-                        <el-button @click="submitForm" type="danger" class="el-button-block" :disabled="data_submit_button" :loading="data_submit_button_loading">{{current_menu==='register'?"注册":"登录"}}</el-button>
+                        <el-button @click="zz" type="danger" class="el-button-block" :disabled="data_submit_button" :loading="data_submit_button_loading">{{current_menu==='register'?"注册":"登录"}}</el-button>
                     </el-form-item>
                 </el-form>
             </ul>
@@ -77,8 +77,9 @@
 <script>
 import { reactive,toRefs,onBeforeUnmount,getCurrentInstance } from 'vue';
 import{validate_email,validate_password,validate_code} from '../../utils/validate';
-import {GetCode,ErrorHttp,Register} from '../../api/common';
-
+import {GetCode} from '../../api/common';
+import{ Login,Register} from "../../api/account";
+import sha1 from 'js-sha1';
 
 export default{
     setup(props,{ root }){
@@ -86,20 +87,38 @@ export default{
         const submitForm = ()=>{
             proxy.$refs.account_from.validate((valid)=>{
                 if(valid){
-                    if(data.current_menu==="login"){
-                        login()
-                    }else{
-                        register()
+                //    data.current_menu==="login"?login():register();
                         return true
-                    }
-                }else{
-                    alert('表单校验不通过')
-                    return false
+                    }else{
+                        alert('表单校验不通过')
+                        return false
                 }
             })
         }
+        const zz = ()=>{
+            if(submitForm && data.current_menu==="login"){
+                login()
+            }else{
+                register()
+            }
+            
+
+        }
         const login = ()=>{
-            console.log(1111)
+            const data_post = {
+                username:data.form.username,
+                password:sha1(data.form.password),
+                code:data.form.code
+            }
+            // data.data_submit_button_loading = ture;
+            Login(data_post).then(response=>{
+                ElMessage.success({
+                    message:response.message
+                })
+                reset()
+            }).catch(error=>{
+              data.data_submit_button_loading = false;
+            })
         }
         const reset = ()=>{
             proxy.$refs.form.resetFields()//四个input全部重置
@@ -114,7 +133,7 @@ export default{
             console.log(2222)
             const data_post = {
                 username:data.form.username,
-                password:data.form.password,
+                password:sha1(data.form.password),
                 code:data.form.code
             }
             // data.data_submit_button_loading = ture;
@@ -262,7 +281,7 @@ export default{
             }
             data.code_button_loading = true
             data.code_button_text = "发送中"
-            const data_post = {username:data.form.username,module:"register"}
+            const data_post = {username:data.form.username,module:data.current_menu==="login"?"login":"register"}
             // ErrorHttp(data_post).then(response=>{
             //     console.log(response)
             // }).catch(error=>{
@@ -278,7 +297,7 @@ export default{
                     })
                     data.code_button_loading = false
                     data.code_button_text="获取验证码"  
-                    return false
+                  
                    
                 }
                     ElMessage.success({
@@ -290,11 +309,11 @@ export default{
                 
             }).catch(error=>{
                 data.code_button_loading = false
-                data.code_button_text = "获取验证码"
+                data.code_button_text = "再次获取验证码"
             })
         }
         return{
-            toggleMenu,...toRefs(data),getCode,submitForm
+            toggleMenu,...toRefs(data),getCode,submitForm,zz
         }
     }
 }
