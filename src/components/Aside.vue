@@ -1,7 +1,7 @@
 <template>
     <!-- el-menu 框架 -->
     <el-menu default-active="4" background-color="#344a5f" text-color="#fff"
-        active-text-color="#ffd04b"
+        active-text-color="#ffd04b" router 
     >
         <template v-for="item in routers" :key="item.path">
             <template v-if="!item.hidden"> 
@@ -40,7 +40,7 @@ import { useRouter } from 'vue-router';
                     return item.hidden? false:true;
                    
                 }) 
-                console.log(childRouter) 
+                // console.log(childRouter) 
                 if(childRouter.length===1){
                     return true
                 }

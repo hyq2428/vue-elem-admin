@@ -1,3 +1,12 @@
 <template>
+    <svg-icon></svg-icon>
     
 </template>
+<script>
+    import { Avatar } from '@element-plus/icons-vue';
+    export default{
+        components:{
+            Avatar
+        }
+    }
+</script>
