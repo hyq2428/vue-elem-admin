@@ -1,6 +1,7 @@
 <template>
-    <svg-icon></svg-icon>
-    
+    <div>{{ value }}</div>
+    <div>{{ value_store }}</div>
+    <div>计算后的结果是{{ number}}</div>
 </template>
 <script>
 //引入图标在本文件生效 局部引用
@@ -13,11 +14,17 @@
     import {useStore} from 'vuex';
     export default{
         setup(){
-            const store = useStore();
+            const store = useStore();//多一层少一层
+            console.log(store)
             const {state} = useStore();
+            console.log(state)
             const value = state.app.count
-            const value_store = store.app.count
-            return 
+            const value_store = store.state.app.count
+            const number = store.getters["app/getCount"]
+            store.commit('app/SET_TEXT',"调用函数后的参数")//更新了
+            return {
+                value,value_store,number
+            }
         }
     }
 </script>

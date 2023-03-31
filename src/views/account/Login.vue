@@ -80,10 +80,13 @@ import{validate_email,validate_password,validate_code} from '../../utils/validat
 import {GetCode} from '../../api/common';
 import{ Login,Register} from "../../api/account";
 import sha1 from 'js-sha1';
+import {useStore} from 'vuex';
+// import { response } from 'express';
 
 export default{
     setup(props,{ root }){
         const {proxy} = getCurrentInstance()
+        const store = useStore();
         const submitForm = ()=>{
             proxy.$refs.account_from.validate((valid)=>{
                 if(valid){
@@ -98,8 +101,10 @@ export default{
         const zz = ()=>{
             if(submitForm && data.current_menu==="login"){
                 login()
-            }else{
+            }else if(submitForm && data.current_menu==="register"){
                 register()
+            }else{
+
             }
             
 
@@ -110,8 +115,9 @@ export default{
                 password:sha1(data.form.password),
                 code:data.form.code
             }
-            // data.data_submit_button_loading = ture;
-            Login(data_post).then(response=>{
+            data.data_submit_button_loading = true;
+            store.dispatch("app/loadAction",data_post).then(response=>{
+            // Login(data_post).then(response=>{
                 ElMessage.success({
                     message:response.message
                 })
@@ -136,7 +142,7 @@ export default{
                 password:sha1(data.form.password),
                 code:data.form.code
             }
-            // data.data_submit_button_loading = ture;
+            // data.data_submit_button_loading = true;
             Register(data_post).then(response=>{
                 ElMessage.success({
                     message:response.message
@@ -224,7 +230,7 @@ export default{
             code_button_disable:false, //true  才是阻拦
             code_button_text:"获取验证码",
             code_button_timer:null,
-            data_submit_button:false,
+            data_submit_button:true,
             data_submit_button_loading:false,
         })  
         const toggleMenu = ((type)=>{
