@@ -14,6 +14,13 @@
     import {useStore} from 'vuex';
     export default{
         setup(){
+            // const cookie_value =document.cookie.split(";").forEach((key,value)=>{
+            //     key.split("=")[1]
+            // })
+            
+
+
+
             const store = useStore();//多一层少一层
             console.log(store)
             const {state} = useStore();
