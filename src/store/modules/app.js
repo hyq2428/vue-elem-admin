@@ -5,6 +5,7 @@ const state = {
   count:100,
   text:"Vue+Element+js",
   // collapse:false,
+  //记录菜单拦是否收起来
   collapse:JSON.parse(sessionStorage.getItem('collapse')) || false,
   token:'' || getToken(),
   username:'' || getUserName(),

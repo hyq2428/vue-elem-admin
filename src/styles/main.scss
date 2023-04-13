@@ -1,7 +1,10 @@
 @import "./normalize.scss";
 @import "./elementui.scss";
 @import "./icon.scss";
-@import "./sassConfig.scss"
+@import "./sassConfig.scss";
 // body {
 //     background-color: red;
 // }
+.pull-right{
+    float: right;
+}

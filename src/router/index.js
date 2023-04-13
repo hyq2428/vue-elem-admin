@@ -1,11 +1,11 @@
     import { createRouter, createWebHashHistory } from "vue-router";
     import HomeView from "../views/HomeView.vue";
-
+    import { Login } from "@/api/account";
     const routes = [
         {
             path: "/",
             name: "home",
-            redirect:"Login",//重定向
+            // redirect:"Login",//重定向
             hidden:true,//渲染侧菜单拦时要不要判断
             // meta:{
             //     title:"根路径"
