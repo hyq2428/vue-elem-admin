@@ -11,6 +11,6 @@ export function delToken(){Cookies.remove(tokenKey)}
 //写入
 export function setUserName(value){Cookies.set(userNameKey,value)}
 
-export function detUserName(){return Cookies.get(userNameKey)}
+export function getUserName(){return Cookies.get(userNameKey)}
 
 export function delUserName(){Cookies.remove(userNameKey)}

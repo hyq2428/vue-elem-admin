@@ -6,12 +6,12 @@
             </span>
         </div>
         <div class="wrap"><!-- 右侧-->
-            <div class="user-info">
+            <div class="user-info"> 
                 <div class="face-info">
                     <img src="../assets/logo-min.png" alt="3388107152@qq.com">
-                    <span class="name">3388107152@qq.com</span>
+                    <span class="name">{{username}}</span>
                 </div>
-                <span class="logout">
+                <span class="logout" @click="handLogout">
                     <svg-icon iconName="logout" className="icon-logout"></svg-icon>
                 </span>
             </div> 
@@ -62,14 +62,39 @@
 
 <script>
     import { useStore } from "vuex";
+    import { ref } from 'vue';
+    import { useRouter } from 'vue-router';
+// import { response } from "express";
+// import { ElMessage } from "element-plus";
+
     export default{
         
         setup(props){
             const store = useStore()
+            const {replace} = useRouter()
+            const username = ref(store.state.app.username)
             const switchAside =(()=>{
                 store.commit('app/SET_COLLAPSE')
             })
-            return{switchAside}
+            const handLogout = (()=>{
+                ElMessageBox.confirm('确定退出管理后台','提示',{
+                    confirmButtonText:'确定',
+                    cancelButtonText:'取消',
+                    type:'warning',
+                }).then(()=>{//按确定执行是什么
+                    store.dispatch("app/logoutAction").then(response=>{
+                        ElMessage.success({
+                            message:response.message
+                        })
+                        replace({
+                            name:'Login'
+                        })
+                    })
+                }).catch(error=>{})//按取消执行是什么
+                
+                
+            })
+            return{switchAside,username,handLogout}
         }
     }
 </script>

@@ -1,13 +1,13 @@
-import { Login } from "@a/account"
-import { setToken,setUserName } from '@u/cookies'//只有一个叫cookies的文件就不需要写文件的尾缀
+import { Login,Logout } from "@a/account"
+import { setToken,setUserName,getToken,getUserName,delToken,delUserName } from '@u/cookies'//只有一个叫cookies的文件就不需要写文件的尾缀
 
 const state = {
   count:100,
   text:"Vue+Element+js",
   // collapse:false,
   collapse:JSON.parse(sessionStorage.getItem('collapse')) || false,
-  token:'',
-  username:'',
+  token:'' || getToken(),
+  username:'' || getUserName(),
 }//存储
 const getters = {
   getCount:(state)=>{
@@ -53,11 +53,24 @@ const actions = {
       commit("SET_TEXT",payload)
   },
   loadAction(context,requesData){
+      return new Promise((resolve,reject)=>{
+        Login(requesData).then((response)=>{
+          let data = response.data
+          context.commit('SET_TOKEN',data.token)
+          context.commit('SET_USERNAME',data.username)
+          resolve(response)
+        }).catch(error=>{
+          reject(error)
+        })
+      })
+     },
+  logoutAction({commit}){
     return new Promise((resolve,reject)=>{
-      Login(requesData).then((response)=>{
-        let data = response.data
-        context.commit('SET_TOKEN',data.token)
-        context.commit('SET_USERNAME',data.username)
+      Logout().then((response)=>{
+        delToken()
+        delUserName()
+        commit('SET_TOKEN','')
+        commit('SET_USERNAME','')
         resolve(response)
       }).catch(error=>{
         reject(error)
