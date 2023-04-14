@@ -97,7 +97,7 @@
                     path:"/newsDatailed",
                     name:"NewsDatailed",
                     
-                    hidden:true,
+                    // hidden:true,
                     meta:{
                         title:"信息详情"
                     },
