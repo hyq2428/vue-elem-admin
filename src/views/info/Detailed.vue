@@ -13,7 +13,7 @@
         <el-form-item label="信息标题:" prop="title">
             <el-input v-model="filed.title"></el-input>
         </el-form-item>
-        <el-form-item label="　缩略图:" prop="imageUrl">
+        <el-form-item label="　缩略图:" prop="image_url">
             <el-upload class="avatar-uploader"
              action="#" list-type="picture-card" :auto-upload="true"
              :http-request="handUpload"
@@ -21,7 +21,7 @@
              :before-upload="handBeforeUpload"
             
              >  
-             <!-- <img v-if="filed.imageUrl" :src="filed.imageUrl" class="avatar"> -->
+             <img v-if="filed.image_url" :src="filed.image_url" class="avatar">
             <span>+</span>
         </el-upload> 
 
@@ -72,7 +72,7 @@ import { ElMessage } from 'element-plus';
             const {infoData,handGetCategory:getList } = categoryHook()
             const data = reactive({
                 filed:{
-                    imageUrl:"",
+                    image_url:"",
                     category_id:"",
                     title:"",
                     create_date:"",
@@ -92,7 +92,7 @@ import { ElMessage } from 'element-plus';
                 from_rules:{
                     category_id:[{required:true,message:"分类不能为空",trigger:"change"}],
                     title:[{required:true,message:"标题不能为空",trigger:"change"}],
-                    imageUrl:[{required:true,message:"缩略图不能为空",trigger:"change"}],
+                    image_url:[{required:true,message:"缩略图不能为空",trigger:"change"}],
                     create_date:[{required:true,message:"请选择发布日期",trigger:"change"}],
                     status:[{required:true,message:"请选择发布状态",trigger:"change"}],
                     content:[{required:true,message:"内容不能为空",trigger:"change"}],
@@ -177,7 +177,7 @@ import { ElMessage } from 'element-plus';
                 const from = new FormData()
                 from.append("files",file)
                 UploadFile(from).then(response=>{
-                    data.filed.imageUrl=response.data.files_path
+                    data.filed.image_url=response.data.files_path
             })
             }
             return{...toRefs(data),

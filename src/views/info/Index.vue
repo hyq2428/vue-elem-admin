@@ -30,14 +30,20 @@
     style="width: 100%"
     @selection-change="handleSelectionChange">
     <el-table-column type="selection" width="40" />
-    <el-table-column prop="name" label="标题" width="500" />
-    <el-table-column prop="address" label="类别" />
-    <el-table-column prop="date" label="日期" />
+    <el-table-column prop="title" label="标题" width="500" />
+    <el-table-column prop="category_name" label="类别" />
+    <el-table-column prop="createDate" label="日期" :formatter="formDate" />
+  
+    <el-table-column prop="status" label="发布状态">
+        <template #default="scope">
+            <el-switch v-model="scope.row.status"></el-switch>
+        </template>
+    </el-table-column >
     <el-table-column prop="address" label="操作" width="200">
-    <template #default="scoped">
-        <el-button type="danger" size="small">编辑</el-button>
-        <el-button size="small">删除</el-button>
-    </template>
+        <template #default="scoped">
+            <el-button type="danger" size="small">编辑</el-button>
+            <el-button size="small">删除</el-button>
+        </template>
     </el-table-column>
   </el-table>
   <el-row class="margin-top-30">
@@ -84,12 +90,18 @@
 </style>
 <script>
 // import { zhCn } from 'element-plus/lib/locale';
-import { reactive, toRefs } from 'vue';
-
+import { reactive, toRefs,onBeforeMount } from 'vue';
+import { GetTabList } from '@a/info';
+import { getDate } from "@a/common";
+import  dayjs  from 'dayjs';
 export default{
     setup(){
+        onBeforeMount(()=>{
+            handleGetList()
+        })
         const data = reactive({
-            category:0,
+            category:2,
+            total:0,
             category_options:[
                 {label:"人工智能",value:0},
                 {label:"技术",value:1}
@@ -99,11 +111,27 @@ export default{
                 { name:"王子李",address:"上海市浦东区解放小区158号",date:"2023-4-10"},
             ]
         })
+        const request_data = reactive({
+            pageNumber:1, //当前页码
+            pageSize:10, //每页数量
+        })
+        //请求信息列表数据
+        const handleGetList = ()=>{
+            GetTabList(request_data).then(response=>{
+                const response_data = response.data
+                data.tableData = response_data.data
+                data.total = response_data.total
+            })
+        }
+        const formDate = (row)=>{
+            return getDate({value:row.createDate*1000})
+            return dayjs(row.createDate*1000).format('YYYY-MM-DD HH:mm:ss')
+        }
         const handleSelectionChange = ()=>{
 
         }
         // let locale = zhCn
-        return{...toRefs(data),handleSelectionChange}
+        return{...toRefs(data),handleSelectionChange,formDate}
     }
 }
 </script>
