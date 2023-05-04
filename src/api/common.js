@@ -14,7 +14,13 @@ export function ErrorHttp(data) {
         data
     })
 }
-
+export function UploadFile(data) {
+    return service.request({
+        method: "post",
+        url: "/upload",
+        data
+    })
+}
 // export function Register(data) {
 //     return service.request({
 //         method: "post",

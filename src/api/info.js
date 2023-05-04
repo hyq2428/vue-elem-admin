@@ -41,3 +41,11 @@ export function CategoryDel(data){
         data
     })
 }
+//添加信息
+export function InfoCreate(data){
+    return service.request({
+        method:"post",
+        url:"/news/add/",
+        data
+    })
+}
