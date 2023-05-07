@@ -22,7 +22,7 @@ export function UploadFile(data) {
     })
 }
 export function getDate(params) {
-   const new_date = params.value?new DataTransfer(params.value):new Date()
+   const new_date = params.value?new Date(params.value):new Date()
    let year = new_date.getFullYear()
    let month = new_date.getMonth()
    let day = new_date.getDay()
