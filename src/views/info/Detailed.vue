@@ -60,15 +60,15 @@ import { onBeforeMount, onMounted, reactive,ref,toRefs } from 'vue';
 import WangEditor from "wangeditor";
 import { categoryHook } from '../hook/infoHook';
 import { UploadFile} from '@a/common';
-import { InfoCreate } from '@a/info';
-import { useRouter } from 'vue-router';
+import { InfoCreate,GetDetailed,EditInfo} from '@a/info';
+import { useRouter,useRoute } from 'vue-router';
 import  dayjs  from 'dayjs';
 import { ElMessage } from 'element-plus';
 // import { Delete, Download, Plus, ZoomIn } from '@element-plus/icons-vue'
 
     export default{
         setup(){
-            // const store = useStore()
+            const {query} = useRoute()
             const {infoData,handGetCategory:getList } = categoryHook()
             const data = reactive({
                 filed:{
@@ -88,7 +88,7 @@ import { ElMessage } from 'element-plus';
                 dialogVisible:false,
                 dialogImageUrl:"",
                 disabled:false,
-                zz:[],
+                row_id:query.id,
                 from_rules:{
                     category_id:[{required:true,message:"分类不能为空",trigger:"change"}],
                     title:[{required:true,message:"标题不能为空",trigger:"change"}],
@@ -105,21 +105,38 @@ import { ElMessage } from 'element-plus';
                 formDom.value.validate((valid)=>{
                     
                     if(valid){
-                        const request_data = JSON.parse(JSON.stringify(data.filed))
-                        request_data.create_date = 
-                        dayjs(request_data.create_date).format('YYYY-MM-DD HH:mm:ss')
-                        request_data.category_id = request_data.category_id[request_data.category_id.length-1]
-                        InfoCreate(request_data).then(response=>{
-                            ElMessage.success(response.message)
-                            go(-1)
-                        }).catch(error=>{
-                            ElMessage.error('请求失败')
-                        })
+                        data.row_id?handEditInfo():handAddInfo()
                     }else{
                         console.log('error')
                         return false
                     }
                 })
+            }
+            //添加信息
+            const handAddInfo = ()=>{
+                const request_data = JSON.parse(JSON.stringify(data.filed))
+                request_data.create_date = 
+                dayjs(request_data.create_date).format('YYYY-MM-DD HH:mm:ss')
+                request_data.category_id = request_data.category_id[request_data.category_id.length-1]
+                InfoCreate(request_data).then(response=>{
+                    ElMessage.success(response.message)
+                    go(-1)
+                }).catch(error=>{
+                         ElMessage.error('请求失败')
+                });
+            }
+             //修改信息
+             const handEditInfo = ()=>{
+                const request_data = JSON.parse(JSON.stringify(data.filed))
+                request_data.create_date = 
+                dayjs(request_data.create_date).format('YYYY-MM-DD HH:mm:ss')
+                request_data.category_id = request_data.category_id[request_data.category_id.length-1]
+                EditInfo(request_data).then(response=>{
+                    ElMessage.success(response.message)
+                    go(-1)
+                }).catch(error=>{
+                         ElMessage.error('请求失败')
+                });
             }
             //富文本配置
             const editor = ref()
@@ -155,6 +172,7 @@ import { ElMessage } from 'element-plus';
             //挂栽之前请求数据
             onBeforeMount(()=>{
                 getList()
+                data.row_id && handGetDetailed()
             })
             //限制上传文件大小和格式
             const handBeforeUpload = (file,fileList)=>{
@@ -179,6 +197,14 @@ import { ElMessage } from 'element-plus';
                 UploadFile(from).then(response=>{
                     data.filed.image_url=response.data.files_path
             })
+            }
+            const handGetDetailed = ()=>{
+                GetDetailed({id:data.row_id}).then(response=>{
+                    const response_data = response.data
+                    data.filed = response_data
+                    //富文本还原数据
+                    editor_intance.txt.html(response_data.content)
+                })
             }
             return{...toRefs(data),
                 handlePictureCardPreview,handleRemove,handleDownload,
