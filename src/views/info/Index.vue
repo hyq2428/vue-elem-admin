@@ -115,7 +115,8 @@ export default{
                     batch_delete:false
                 },
                 request:{
-                    url:"/news/getList/",
+                    url:"info",
+                    // url:"/news/getList/",
                     data:{
                         pageNumber:1,
                         pageSize:10
@@ -246,6 +247,9 @@ export default{
                 query:{id}
             })
         }
+        // const handonload = (data)=>{
+        //     console.log("zz",data)
+        // }
         // let locale = zhCn
         return{...toRefs(data),handleSelectionChange,formDate,request_data,infoData,
             handleSizeChange,handleCurrentChange,changeStatus,handleDeleteConfirm,
