@@ -28,7 +28,15 @@ export function TableData(data={}) {
         data: data.data
     })
 }
+export function SwitchSatus(data={}) {
+    return service.request({
+        method: data.method,
+        url: data.url,
+        data: data.data
+    })
+}
 export function getDate(params) {
+    //获取数据
    const new_date = params.value?new Date(params.value):new Date()
    let year = new_date.getFullYear()
    let month = new_date.getMonth()

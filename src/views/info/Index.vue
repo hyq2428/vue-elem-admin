@@ -1,8 +1,5 @@
 <template>
-    <BasisTable :coulums="table_config.table_header" 
-    :config="table_config.config"
-    :request="table_config.request"
-    ></BasisTable>
+    
     <el-row>
         <el-col :span="18">
             <el-form :inline="true">
@@ -17,10 +14,10 @@
                     </el-select> -->
                 </el-form-item>
                 <el-form-item label="关键字">
-                    <el-select placeholder="请选择" class="width-100" v-model="request_data.key"> 
+                    <!-- <el-select placeholder="请选择" class="width-100" v-model="request_data.key"> 
                         <el-option v-for="item in keyword_options" 
                         :key="item.value" :value="item.value" :label="item.label"></el-option>
-                    </el-select>
+                    </el-select> -->
                 </el-form-item>
                 <el-form-item>
                     <el-input  placeholder="请输入关键字" class="width-180" 
@@ -37,8 +34,11 @@
             </router-link>
         </el-col>
     </el-row>
-
-    <el-table
+    <BasisTable :coulums="table_config.table_header" 
+    :config="table_config.config"
+    :request="table_config.request"
+    ></BasisTable>
+    <!-- <el-table
     ref="table"
     border
     :data="tableData"
@@ -61,7 +61,7 @@
             <el-button size="small" @click="handleDeleteConfirm(scoped.row.id)">删除</el-button>
         </template>
     </el-table-column>
-  </el-table>
+  </el-table> -->
  
 </template>
 <style scoped>
@@ -96,7 +96,6 @@ export default{
     components:{BasisTable},
     setup(){
         onBeforeMount(()=>{
-            handleGetList()
             getList()
         })
         //表头数据
@@ -105,14 +104,22 @@ export default{
                 table_header:[
                     {label:"标题",prop:"title"},
                     {label:"类别",prop:"category_name"},
-                    {label:"日期",prop:"create_date"},
-                    {label:"发布状态",prop:"status"},
+                    {label:"日期",prop:"create_date",type:"function",callback:(row)=>{
+                        return getDate({value:row.createDate*1000})
+                    }},
+                    {
+                        label:"发布状态",
+                        prop:"status",
+                        type:"switch",
+                        key_id:"id",
+                        api_module:"info",
+                        api_key:"info_status",
+                    },
                 ],
                 //自定义配置
                 config:{
-                    selection:false,
-                    page:true,
-                    batch_delete:false
+                    selection:true,
+                  
                 },
                 request:{
                     url:"info",
@@ -177,10 +184,10 @@ export default{
             delete data.keyword
             return data
         }
-        const formDate = (row)=>{
-            return getDate({value:row.createDate*1000})
-            return dayjs(row.createDate*1000).format('YYYY-MM-DD HH:mm:ss')
-        }
+        // const formDate = (row)=>{
+        //     return getDate({value:row.createDate*1000})
+        //     return dayjs(row.createDate*1000).format('YYYY-MM-DD HH:mm:ss')
+        // }
         const handleSizeChange = (val)=>{
             request_data.pageSize= val
             request_data.pageNumber = 1
@@ -192,17 +199,17 @@ export default{
             handleGetList()
         }
         //改变状态
-        const changeStatus = (value,data)=>{
-            data.loading = true
-            data.status = !data.status
-            ChangeStatus({id:data.id,status:value}).then(response=>{
-                ElMessage.success(response.message)
-                data.status = value
-                data.loading = false
-            }).catch(error=>{
-                data.loading = false
-            })
-        }
+        // const changeStatus = (value,data)=>{
+        //     data.loading = true
+        //     data.status = !data.status
+        //     ChangeStatus({id:data.id,status:value}).then(response=>{
+        //         ElMessage.success(response.message)
+        //         data.status = value
+        //         data.loading = false
+        //     }).catch(error=>{
+        //         data.loading = false
+        //     })
+        // }
         //删除新闻
         const  handleDeleteConfirm = (value)=>{
             ElMessageBox.confirm('确定删除当前数据吗？删除后将无法恢复','提示',{
@@ -251,8 +258,8 @@ export default{
         //     console.log("zz",data)
         // }
         // let locale = zhCn
-        return{...toRefs(data),handleSelectionChange,formDate,request_data,infoData,
-            handleSizeChange,handleCurrentChange,changeStatus,handleDeleteConfirm,
+        return{...toRefs(data),handleSelectionChange,request_data,infoData,
+            handleSizeChange,handleCurrentChange,handleDeleteConfirm,
             handleGetList,handleDetailed,table_config
         }
     }
