@@ -37,7 +37,19 @@
     <BasisTable :coulums="table_config.table_header" 
     :config="table_config.config"
     :request="table_config.request"
-    ></BasisTable>
+    >
+   
+    <template v-slot:operation="stoat_data">
+        <el-button type="danger" size="small" 
+            @click="handleDetailed(stoat_data.data.id)">编辑
+        </el-button>
+ 
+        <el-button type="danger" size="small" 
+            @click="handleDeleteConfirm(stoat_data.data.id)">删除
+        </el-button>
+    </template>
+   
+    </BasisTable>
     <!-- <el-table
     ref="table"
     border
@@ -102,8 +114,8 @@ export default{
         const table_config = reactive({
             //表头以及数据绑定标签名
                 table_header:[
-                    {label:"标题",prop:"title"},
-                    {label:"类别",prop:"category_name"},
+                    {label:"标题",prop:"title",width:"500"},
+                    {label:"类别",prop:"category_name",width:"200"},
                     {label:"日期",prop:"create_date",type:"function",callback:(row)=>{
                         return getDate({value:row.createDate*1000})
                     }},
@@ -114,7 +126,21 @@ export default{
                         key_id:"id",
                         api_module:"info",
                         api_key:"info_status",
+                        width:"100",
                     },
+                    {
+                        label:"操作",
+                        type:"slot",
+                        sloat_name:"operation",
+                        width:"200",
+                        delete_elem:true,
+                    },
+                    {
+                        label:"其他插槽",
+                        type:"slot",
+                        sloat_name:"other",
+                        width:"200",
+                    }
                 ],
                 //自定义配置
                 config:{
