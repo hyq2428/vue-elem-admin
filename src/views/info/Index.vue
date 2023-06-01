@@ -36,17 +36,16 @@
     </el-row>
     <BasisTable :coulums="table_config.table_header" 
     :config="table_config.config"
-    :request="table_config.request"
+    :request="table_config.request"  
     >
-   
-    <template v-slot:operation="stoat_data">
+    <template v-slot:operation="sloat_data">
         <el-button type="danger" size="small" 
-            @click="handleDetailed(stoat_data.data.id)">编辑
+            @click="handleDetailed(sloat_data.data.id)">编辑
         </el-button>
  
-        <el-button type="danger" size="small" 
-            @click="handleDeleteConfirm(stoat_data.data.id)">删除
-        </el-button>
+        <!-- <el-button  size="small" 
+            @click="handleDeleteConfirm(sloat_data.data.id)">删除
+        </el-button> -->
     </template>
    
     </BasisTable>
@@ -96,10 +95,9 @@
 </style>
 <script>
 // import { zhCn } from 'element-plus/lib/locale';
-import { reactive, toRefs,onBeforeMount, pushScopeId } from 'vue';
-import { GetTabList,ChangeStatus,NewsDelete} from '@a/info';
+import { reactive, toRefs,onBeforeMount } from 'vue';
+import { GetTabList} from '@a/info';
 import { getDate } from "@a/common";
-import  dayjs  from 'dayjs';
 import { categoryHook } from '../hook/infoHook';
 import router from '@/router';
 import BasisTable from '@c/table'
@@ -135,12 +133,12 @@ export default{
                         width:"200",
                         delete_elem:true,
                     },
-                    {
-                        label:"其他插槽",
-                        type:"slot",
-                        sloat_name:"other",
-                        width:"200",
-                    }
+                    // {
+                    //     label:"其他插槽",
+                    //     type:"slot",
+                    //     sloat_name:"other",
+                    //     width:"200",
+                    // }
                 ],
                 //自定义配置
                 config:{
@@ -210,10 +208,7 @@ export default{
             delete data.keyword
             return data
         }
-        // const formDate = (row)=>{
-        //     return getDate({value:row.createDate*1000})
-        //     return dayjs(row.createDate*1000).format('YYYY-MM-DD HH:mm:ss')
-        // }
+       
         const handleSizeChange = (val)=>{
             request_data.pageSize= val
             request_data.pageNumber = 1
@@ -237,43 +232,43 @@ export default{
         //     })
         // }
         //删除新闻
-        const  handleDeleteConfirm = (value)=>{
-            ElMessageBox.confirm('确定删除当前数据吗？删除后将无法恢复','提示',{
-                    confirmButtonText:'确定',
-                    cancelButtonText:'取消',
-                    type:'warning',
-                    showClose:false,//右上角的关闭
-                    closeOnClickModal:false,//无法点击屏幕取消操作
-                    closeOnPressEscape:false,//无法按esc取消操作
-                    beforeClose:(action,instance,done)=>{
-                        if(action==='confirm'){
-                            instance.confirmButtonLoading = true
-                            NewsDelete({id:value}).then(response=>{
-                                ElMessage.success(response.message)
-                                data.row_data_id = ''
-                                instance.confirmButtonLoading = false
-                                done()
-                                handleGetList()
-                            }).catch(error=>{
-                                instance.confirmButtonLoading = false
-                                done()
-                            })
-                        }else{
-                            done()
-                        }
-                    }
-                })
-            }
+        // const  handleDeleteConfirm = (value)=>{
+        //     ElMessageBox.confirm('确定删除当前数据吗？删除后将无法恢复','提示',{
+        //             confirmButtonText:'确定',
+        //             cancelButtonText:'取消',
+        //             type:'warning',
+        //             showClose:false,//右上角的关闭
+        //             closeOnClickModal:false,//无法点击屏幕取消操作
+        //             closeOnPressEscape:false,//无法按esc取消操作
+        //             beforeClose:(action,instance,done)=>{
+        //                 if(action==='confirm'){
+        //                     instance.confirmButtonLoading = true
+        //                     NewsDelete({id:value}).then(response=>{
+        //                         ElMessage.success(response.message)
+        //                         data.row_data_id = ''
+        //                         instance.confirmButtonLoading = false
+        //                         done()
+        //                         handleGetList()
+        //                     }).catch(error=>{
+        //                         instance.confirmButtonLoading = false
+        //                         done()
+        //                     })
+        //                 }else{
+        //                     done()
+        //                 }
+        //             }
+        //         })
+        //     }
         //点击选择删除存储数据准备删除
-        const handleSelectionChange = (val)=>{
-            if(val && val.length >0){
-                const idItem = val.map(item=>item.id)
-                data.row_data_id = idItem.join()
-            }else{
-                data.row_data_id = ''
-            }
-       
-        }
+        // const handleSelectionChange = (val)=>{
+        //     if(val && val.length >0){
+        //         const idItem = val.map(item=>item.id)
+        //         data.row_data_id = idItem.join()
+        //     }else{
+        //         data.row_data_id = ''
+        //     }
+        //     data.row_data_id = val && val.length >0 ?val.map(item=>item.id).join : ""
+        // }
         const handleDetailed = (id)=>{
             router.push({
                 path:"/newsDatailed",
@@ -284,8 +279,8 @@ export default{
         //     console.log("zz",data)
         // }
         // let locale = zhCn
-        return{...toRefs(data),handleSelectionChange,request_data,infoData,
-            handleSizeChange,handleCurrentChange,handleDeleteConfirm,
+        return{...toRefs(data),request_data,infoData,
+            handleSizeChange,handleCurrentChange,
             handleGetList,handleDetailed,table_config
         }
     }

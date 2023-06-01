@@ -1,8 +1,9 @@
 import { reactive } from "vue";
 import { TableData} from "@a/common"
 import ApiUrl from "@/api/requestUrl";
-import { ElLoading } from "element-plus"
+import { ElLoading, ElMessage } from "element-plus"
 import  "element-plus/lib/components/loading/style/css";
+import { NewsDelete } from '@a/info';
 
 export function requesthook(){
     let request_config = reactive({
@@ -14,8 +15,46 @@ export function requesthook(){
     const table_data = reactive({
         data:[],
         total:0,
-        loading:false
+        loading:false,
+        data_id:""
     })
+     //删除新闻
+     const  handleDeleteConfirm = ()=>{
+        ElMessageBox.confirm('确定删除当前数据吗？删除后将无法恢复','提示',{
+                confirmButtonText:'确定',
+                cancelButtonText:'取消',
+                type:'warning',
+                showClose:false,//右上角的关闭
+                closeOnClickModal:false,//无法点击屏幕取消操作
+                closeOnPressEscape:false,//无法按esc取消操作
+                beforeClose:(action,instance,done)=>{
+                    if(action==='confirm'){
+                        instance.confirmButtonLoading = true
+                        NewsDelete({id:table_data.data_id}).then(response=>{
+                            ElMessage.success(response.message)
+                            table_data.data_id = ''
+                            instance.confirmButtonLoading = false
+                            loadData()
+                            done()
+                        }).catch(error=>{
+                            instance.confirmButtonLoading = false
+                            done()
+                        })
+                    }else{
+                        done()
+                    }
+                }
+            })
+        }
+    const save_Data_Id = (value)=>{
+        const isArray = Array.isArray(value)
+        if(!isArray){
+            table_data.data_id = value
+        }else{
+            table_data.data_id = value.length > 0 ?value.map(item=>item.id).join() : ""
+        }
+    }
+
     const loadingServer = ElLoading.service({
         lock:table_data.loading,
         text:"加载中"
@@ -60,5 +99,5 @@ export function requesthook(){
         }
         return loadData()
     }
-    return{requestData,table_data}
+    return{requestData,table_data,handleDeleteConfirm,save_Data_Id}
 }
